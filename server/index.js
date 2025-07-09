@@ -37,31 +37,35 @@ app.get('/messages/:room', async (req, res) => {
     res.send(messages);
 });
 
-mongoose.connect(MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGODB_CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  keepAlive: true
+})
 .then(() =>  
     console.log('Connected to MongoDB')
 )
 .catch(err => console.error(err));
 
+const getMessageModel = (roomName) => {
+  return mongoose.models[roomName] || mongoose.model(roomName, messageSchema, roomName);
+};
+
 io.on('connection', (socket) => {
+  socket.on('message', async (data) => {
+    try {
+      const Message = getMessageModel(data.roomName);
+      const msg = new Message(data);
+      await msg.save();
+      io.to(data.roomName).emit('message', data);
+    } catch (err) {
+      console.error('❌ Error saving message:', err.message);
+    }
+  });
+});
 
-    socket.on('join', (data) => {
-        socket.join(data);
-        console.log('joined room: ', data);
-        
-    })
-    
-    socket.on('message', (data) => {
-        const messageModel = mongoose.model('Message', messageSchema, data.roomName);
-        console.log(data);
-        const msg = new messageModel(data); 
-        const res = msg.save();
-        io.to(data.roomName).emit('message', data);
-    });
-
-    
-    // io.to(data.roomName).emit('message', data);
-})  
 
 const PORT = process.env.PORT || 5000;
 
