@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const socketIo = require('socket.io');
 
 const MONGODB_CONNECTION_STRING = 'mongodb+srv://ranadeepbashetty:Ranadeep%402002@random-chat-cluster.3n6oiie.mongodb.net/?retryWrites=true&w=majority&appName=random-chat-cluster';
+// const MONGODB_CONNECTION_STRING = 'mongodb://localhost:27017/chat_rooms';
     
 const app = express();
 
