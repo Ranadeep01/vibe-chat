@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 
 const Chat = () => {
     
+    const server = 'http://localhost:5000';
     const socketRef = useRef();
     const location = useLocation();
 
@@ -26,7 +27,7 @@ const Chat = () => {
         setRoom(url[3]);
         setUserName(url[2]);
         
-        socketRef.current = io('http://localhost:5000');
+        socketRef.current = io(server);
 
         socketRef.current.on('message', (data) => {
             console.log('Received:', data);
