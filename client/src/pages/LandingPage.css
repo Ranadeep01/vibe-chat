@@ -1,0 +1,86 @@
+/* LandingPage.css */
+
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #121212;
+  color: #fff;
+  height: 100vh;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.landing-input {
+  width: 100%;
+  max-width: 400px;
+  padding: 14px 18px;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  background-color: #1e1e1e;
+  border: none;
+  border-radius: 10px;
+  color: #ffffff;
+  outline: none;
+  box-shadow: 0 0 0 1px #333 inset;
+  transition: all 0.3s ease;
+}
+
+.landing-input:focus {
+  box-shadow: 0 0 0 2px #00bcd4;
+  background-color: #262626;
+}
+
+.gender-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.gender-buttons button {
+  background-color: #1e1e1e;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gender-buttons button img {
+  width: 30px;
+  height: 30px;
+  filter: invert(1);
+}
+
+.gender-buttons button:hover {
+  border-color: #00bcd4;
+  background-color: #262626;
+}
+
+.gender-buttons button:focus {
+  outline: none;
+  border-color: #00bcd4;
+  box-shadow: 0 0 10px #00bcd4;
+}
+
+.submit-button {
+  background-color: #00bcd4;
+  color: #000;
+  font-weight: 600;
+  padding: 14px 40px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #00acc1;
+}
