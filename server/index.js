@@ -63,6 +63,8 @@ io.on('connection', (socket) => {
     // io.to(data.roomName).emit('message', data);
 })  
 
-server.listen(5000, () => {
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
   console.log('Server is running on port 5000');
 });

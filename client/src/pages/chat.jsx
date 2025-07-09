@@ -9,7 +9,9 @@ import { useLocation } from "react-router-dom";
 
 const Chat = () => {
     
-    const server = 'http://localhost:5000';
+    // const SERVER = 'http://localhost:5000';
+    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+
     const socketRef = useRef();
     const location = useLocation();
 
@@ -27,7 +29,7 @@ const Chat = () => {
         setRoom(url[3]);
         setUserName(url[2]);
         
-        socketRef.current = io(server);
+        socketRef.current = io(SERVER);
 
         socketRef.current.on('message', (data) => {
             console.log('Received:', data);
