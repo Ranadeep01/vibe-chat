@@ -41,8 +41,7 @@ mongoose.connect(MONGODB_CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
-  keepAlive: true
+  socketTimeoutMS: 45000
 })
 .then(() =>  
     console.log('Connected to MongoDB')
@@ -54,21 +53,23 @@ const getMessageModel = (roomName) => {
 };
 
 io.on('connection', (socket) => {
-  socket.on('message', async (data) => {
-    try {
-      const Message = getMessageModel(data.roomName);
-      const msg = new Message(data);
-      await msg.save();
-      io.to(data.roomName).emit('message', data);
-    } catch (err) {
-      console.error('❌ Error saving message:', err.message);
-    }
-  });
+    console.log('New client connected:', socket.id);
+
+    socket.on('join', (room) => {
+        socket.join(room);
+        console.log(`Socket ${socket.id} joined room: ${room}`);
+    });
+
+    socket.on('message', (data) => {
+        console.log('Message received:', data);
+        io.to(data.roomName).emit('message', data); // Broadcast to room
+    });
 });
+
 
 
 const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
-  console.log('Server is running on port 5000');
+  console.log('Server is running on port ', PORT);
 });
