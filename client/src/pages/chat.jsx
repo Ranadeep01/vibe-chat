@@ -1,4 +1,4 @@
-import React, { use, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import io from 'socket.io-client';
 import axios from "axios";
@@ -22,13 +22,16 @@ const Chat = () => {
     const [userName, setUserName] = useState('');
     const [isimageDialogOpen, setIsimageDialogOpen] = useState(false);
 
-    useEffect(() => {
-
+   useEffect(() => {
+    console.log('UE()');
+    
         const url = location.pathname.split('/');
 
-        setRoom(url[3]);
-        setUserName(url[2]);
-        
+        if (url.length > 3) {
+            setUserName(url[2]);
+            setRoom(url[3]);
+        }
+
         socketRef.current = io(SERVER);
 
         socketRef.current.on('message', (data) => {
@@ -36,8 +39,16 @@ const Chat = () => {
             setChat(prev => [...prev, data]);
         });
 
-        return () => socketRef.current.disconnect();
+        return () => {
+            socketRef.current.disconnect();
+        };
     }, []);
+
+    useEffect(() => {
+        if (room !== '') {
+            handleJoin();
+        }
+    }, [room]);
 
     const handleSend = () => {
         if(room === '') return;
