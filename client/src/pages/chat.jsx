@@ -8,11 +8,11 @@ import ImageModel from "../components/imageModel";
 import { useLocation } from "react-router-dom";
 
 const Chat = () => {
-    
     // const SERVER = 'http://localhost:5000';
     const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
+    const chatContainerRef = useRef(); // Add a ref for the chat container
     const location = useLocation();
 
     const [msg, setMsg] = useState('');
@@ -22,9 +22,9 @@ const Chat = () => {
     const [userName, setUserName] = useState('');
     const [isimageDialogOpen, setIsimageDialogOpen] = useState(false);
 
-   useEffect(() => {
-    console.log('UE()');
-    
+    useEffect(() => {
+        console.log('UE()');
+        
         const url = location.pathname.split('/');
 
         if (url.length > 3) {
@@ -50,22 +50,32 @@ const Chat = () => {
         }
     }, [room]);
 
+    // Scroll to the bottom when a new message is added
+useEffect(() => {
+    if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTo({
+            top: chatContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+        });
+    }
+}, [chat]);
+
     const handleSend = () => {
-        if(room === '') return;
+        setImage('');
+        if (room === '') return;
         socketRef.current.emit('message', {
             userName: userName,
-            message: msg,
+            message: msg || image,
             roomName: room
         });
         setMsg('');
     }
 
     const handleJoin = () => {
-        if(room === '') return;
+        if (room === '') return;
         console.log('joined', room);
         socketRef.current.emit('join', room);
         console.log('join request sent');
-        
     }
 
     const handleFileUpload = (e) => {
@@ -106,7 +116,7 @@ const Chat = () => {
                     onChange={(e) => setRoom(e.target.value)}
                     onKeyDown={
                         (e) => {
-                            if(e.key === 'Enter') {
+                            if (e.key === 'Enter') {
                                 handleJoin();
                             }
                         }
@@ -114,7 +124,7 @@ const Chat = () => {
                 />
                 <button onClick={handleJoin}>Join</button>
             </div>
-            <div className="chat-container">
+            <div className="chat-container" ref={chatContainerRef}> {/* Add ref to the chat container */}
                 {
                     chat.map((item, idx) => (
                         <div className="chat" key={idx}>
@@ -150,7 +160,7 @@ const Chat = () => {
                     onChange={(e) => setMsg(e.target.value)}
                     onKeyDown={
                         (e) => {
-                            if(e.key === 'Enter') {
+                            if (e.key === 'Enter') {
                                 handleSend();
                             }
                         }
@@ -168,7 +178,6 @@ const Chat = () => {
                     <ImageModel image={image} handleImageActions={handleImageActions} />
                 )
             }
-
         </div>
     );
 };

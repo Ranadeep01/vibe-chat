@@ -4,8 +4,16 @@ import maleSign from '../assests/male-sign.svg';
 import femaleSign from '../assests/female-sign.svg';
 import './LandingPage.css';
 import { useNavigate } from "react-router-dom";
+import bgImg1 from '../assests/landing-page-bg-1.jpg';
 
 const LandingPage = () => {
+    
+    const bgImages = [bgImg1];
+    
+    const chooseRandomBgImage = () => {
+        const randomIndex = Math.floor(Math.random() * bgImages.length);
+        return (bgImages[0]);
+    }
 
     const [userForm, setUserForm] = useState({
         userName: '',
@@ -13,6 +21,12 @@ const LandingPage = () => {
         age: '',
         roomName: '',
     });
+    const [bgImage, setBgImage] = useState('');
+
+    useEffect(() => {
+    setBgImage(chooseRandomBgImage());
+    }, []);
+
 
     const navigate = useNavigate();
 
@@ -35,7 +49,8 @@ const LandingPage = () => {
     }
 
     return (
-        <div className="landing-container">
+        
+        <div className="landing-container" style={{backgroundImage: `url(${bgImage}), width: 100%, height: 100%`}} >
         <input
             type="text"
             name="userName"

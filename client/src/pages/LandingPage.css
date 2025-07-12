@@ -1,13 +1,16 @@
 /* LandingPage.css */
 
 .landing-container {
+  background-image: url('../assests/landing-page-bg-1.jpg');
+  background-size: cover;
+  background-position-y: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #121212;
   color: #fff;
-  height: 100vh;
+  height: 90vh;
   padding: 2rem;
   font-family: 'Segoe UI', sans-serif;
 }
