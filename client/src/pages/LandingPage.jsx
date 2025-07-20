@@ -35,6 +35,10 @@ const LandingPage = () => {
     }
 
     const handleSubmit = () => {
+        localStorage.setItem('userName', userForm.userName);
+        localStorage.setItem('age', userForm.age);
+        localStorage.setItem('gender', userForm.gender);
+        localStorage.setItem('roomName', userForm.roomName);
         if(userForm.userName === '') {
             alert('Please Enter User Name');
             return;  
@@ -44,7 +48,7 @@ const LandingPage = () => {
             return;
         }
         localStorage.setItem('userForm', JSON.stringify(userForm));
-        navigate(`/chat/${userForm.userName}/${userForm.roomName}`);
+        navigate(`/chat`);
         setUserForm({userName: '', gender: '', age: ''});
     }
 

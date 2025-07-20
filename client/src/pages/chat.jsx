@@ -6,14 +6,18 @@ import uploadImg from '../assests/image-upload-icon.svg';
 import sendLogo from '../assests/send.svg';
 import ImageModel from "../components/imageModel";
 import { useLocation } from "react-router-dom";
+import Gifs from "../components/Gifs";
+import { useNavigate } from "react-router-dom";
+import gifIcon from '../assests/gif-icon.png';
 
 const Chat = () => {
-    // const SERVER = 'http://localhost:5000';
-    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+    const SERVER = 'http://localhost:5000';
+    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
-    const chatContainerRef = useRef(); // Add a ref for the chat container
+    const chatContainerRef = useRef();
     const location = useLocation();
+    const navigate = useNavigate();
 
     const [msg, setMsg] = useState('');
     const [room, setRoom] = useState('');
@@ -21,21 +25,23 @@ const Chat = () => {
     const [image, setImage] = useState('');
     const [userName, setUserName] = useState('');
     const [isimageDialogOpen, setIsimageDialogOpen] = useState(false);
+    const [isGifsSectionActivate, setIsGifsSectionActivate] = useState(true);
 
     useEffect(() => {
-        console.log('UE()');
+        const userName = localStorage.getItem('userName');
+        const room = localStorage.getItem('roomName');
         
-        const url = location.pathname.split('/');
-
-        if (url.length > 3) {
-            setUserName(url[2]);
-            setRoom(url[3]);
+        if(userName === null || room === null) {
+            navigate('/');
         }
 
-        socketRef.current = io(SERVER);
+        setUserName(localStorage.getItem('userName'));
+        setRoom(localStorage.getItem('roomName'));
 
-        socketRef.current.on('message', (data) => {
-            console.log('Received:', data);
+        
+        socketRef.current = io(SERVER);
+        
+        socketRef.current.on('message', (data) => {            
             setChat(prev => [...prev, data]);
         });
 
@@ -44,28 +50,35 @@ const Chat = () => {
         };
     }, []);
 
+    const handleGifClick = (gif) => {
+        setIsGifsSectionActivate(false);
+        if(gif !== 'CLOSE') {
+            handleSend(gif);
+        } 
+    }
+
     useEffect(() => {
-        if (room !== '') {
-            handleJoin();
-        }
-    }, [room]);
+        socketRef.current.on('member_added', (data) => {
+            alert(data)
+        })
+    }, []);
 
     // Scroll to the bottom when a new message is added
-useEffect(() => {
-    if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTo({
-            top: chatContainerRef.current.scrollHeight,
-            behavior: 'smooth'
-        });
-    }
-}, [chat]);
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    }, [chat]);
 
-    const handleSend = () => {
+    const handleSend = (paramMsg = '') => {        
         setImage('');
         if (room === '') return;
         socketRef.current.emit('message', {
             userName: userName,
-            message: msg || image,
+            message: paramMsg || msg || image,
             roomName: room
         });
         setMsg('');
@@ -73,9 +86,7 @@ useEffect(() => {
 
     const handleJoin = () => {
         if (room === '') return;
-        console.log('joined', room);
-        socketRef.current.emit('join', room);
-        console.log('join request sent');
+        socketRef.current.emit('join', room);        
     }
 
     const handleFileUpload = (e) => {
@@ -87,7 +98,6 @@ useEffect(() => {
         data.append('cloud_name', 'dhk5v8qpf')
         axios.post('https://api.cloudinary.com/v1_1/dhk5v8qpf/image/upload', data).then((res) => {
             setImage(res?.data?.secure_url);
-            console.log(res);
         })
     }
 
@@ -104,6 +114,10 @@ useEffect(() => {
             default:
                 break;
         }        
+    }
+
+    const handleGifs = () => {
+        setIsGifsSectionActivate(true);
     }
 
     return (
@@ -130,7 +144,7 @@ useEffect(() => {
                         <div className="chat" key={idx}>
                             <p className="message-user">{item.userName}</p>
                             {
-                                item.message.includes('dhk5v8qpf') ? (
+                                item.message.includes('dhk5v8qpf') || item.message.includes('russmus') ? (
                                     <img src={item.message} alt="" className="message-img message-content" />
                                 ) :
                                 (
@@ -142,16 +156,7 @@ useEffect(() => {
                 }
             </div>
             <div className="input-container">
-                <input
-                    type="file" 
-                    id="file"
-                    onChange={(e) => handleFileUpload(e)}
-                />
-                <label 
-                    className="file-input"
-                    htmlFor="file">
-                    <img src={uploadImg} alt="" />
-                </label>
+
                 <input
                     className="chat-input"
                     type="text"
@@ -166,6 +171,19 @@ useEffect(() => {
                         }
                     }
                 />
+                                <input
+                    type="file" 
+                    id="file"
+                    onChange={(e) => handleFileUpload(e)}
+                />
+                <label 
+                    className="file-input"
+                    htmlFor="file">
+                    <img src={uploadImg} alt="" />
+                </label>
+                {/* <button onClick={() => handleGifs()}> */}
+                    <img src={gifIcon} alt="" onClick={() => handleGifs()} style={{width: '30px'}} />
+                {/* </button> */}
                 <span>
                     <button onClick={handleSend}>
                         <img src={sendLogo} alt="" />
@@ -178,6 +196,15 @@ useEffect(() => {
                     <ImageModel image={image} handleImageActions={handleImageActions} />
                 )
             }
+
+            {
+                isGifsSectionActivate && (
+                    <div className="gifs-section">
+                        <Gifs handleGifClick={handleGifClick} />
+                    </div>
+                )
+            }
+
         </div>
     );
 };

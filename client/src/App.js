@@ -10,7 +10,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/chat/:userName/:roomName" element={<Chat />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       </Router>
     </div>
