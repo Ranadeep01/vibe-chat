@@ -187,7 +187,7 @@ const Chat = () => {
                     <img src={gifIcon} alt="" onClick={() => handleGifs()} style={{width: '30px'}} />
                 {/* </button> */}
                 <span>
-                    <button onClick={handleSend}>
+                    <button onClick={() => handleSend()}>
                         <img src={sendLogo} alt="" />
                     </button>
                 </span>
