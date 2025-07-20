@@ -76,6 +76,8 @@ const Chat = () => {
     const handleSend = (paramMsg = '') => {        
         setImage('');
         if (room === '') return;
+        console.log('msg send to server', msg);
+        
         socketRef.current.emit('message', {
             userName: userName,
             message: paramMsg || msg || image,
