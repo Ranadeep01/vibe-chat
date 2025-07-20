@@ -1,0 +1,57 @@
+.gif-container {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 5px;
+    /* padding: 16px; */
+    overflow-y: auto;
+    align-items: center;
+}
+
+.gif-close-btn {
+    /* position: absolute; */
+    /* top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px; */
+    /* border-radius: 50%; */
+    border: none;
+    background: rgba(123, 97, 255, 0.9);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.gif-close-btn:hover {
+    background: rgba(141, 127, 255, 1);
+    transform: scale(1.1);
+}
+
+.gif-container img {
+    width: 100%;
+    /* height: 100px; */
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+}
+
+.gif-container img:hover {
+    transform: scale(1.05);
+}
+
+/* Custom scrollbar for gif container */
+.gif-container::-webkit-scrollbar {
+    width: 6px;
+}
+.gif-container::-webkit-scrollbar-thumb {
+    background: #6060a0;
+    border-radius: 6px;
+}

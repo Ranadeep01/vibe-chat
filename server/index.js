@@ -37,6 +37,10 @@ app.get('/messages/:room', async (req, res) => {
     res.send(messages);
 });
 
+app.get('/all-rooms', async (req, res) => {
+  
+})
+
 mongoose.connect(MONGODB_CONNECTION_STRING, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -57,7 +61,9 @@ io.on('connection', (socket) => {
 
     socket.on('join', (room) => {
         socket.join(room);
+        socket.broadcast.to(room).emit('member_added', 'New user joined the room')
         console.log(`Socket ${socket.id} joined room: ${room}`);
+        io.to(room).emit('joined', room)
     });
 
     socket.on('message', (data) => {
