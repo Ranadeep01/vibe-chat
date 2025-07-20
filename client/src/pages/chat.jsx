@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 import gifIcon from '../assests/gif-icon.png';
 
 const Chat = () => {
-    const SERVER = 'http://localhost:5000';
-    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+    // const SERVER = 'http://localhost:5000';
+    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
     const chatContainerRef = useRef();
@@ -25,7 +25,7 @@ const Chat = () => {
     const [image, setImage] = useState('');
     const [userName, setUserName] = useState('');
     const [isimageDialogOpen, setIsimageDialogOpen] = useState(false);
-    const [isGifsSectionActivate, setIsGifsSectionActivate] = useState(true);
+    const [isGifsSectionActivate, setIsGifsSectionActivate] = useState(false);
 
     useEffect(() => {
         const userName = localStorage.getItem('userName');
