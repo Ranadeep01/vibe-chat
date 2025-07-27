@@ -1,43 +1,36 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import './Gifs.css';
 
-const Gifs = ({handleGifClick}) => {
-
+const Gifs = ({ handleGifClick, isActive }) => {
     const [gifsList, setGifList] = useState([]);
-    const gifURL = 'https://russmus.net/wp-content/uploads/2024/02/blowjob-gif-5.gif';
 
     useEffect(() => {
-
+        const urls = [];
         for (let cnt = 1; cnt <= 50; cnt++) {
-            const gifURL = `https://russmus.net/wp-content/uploads/2024/02/blowjob-gif-${cnt}.gif`;
-            setGifList(prevState => [...prevState, gifURL]);
+            urls.push(`https://russmus.net/wp-content/uploads/2024/02/blowjob-gif-${cnt}.gif`);
         }
+        setGifList(urls);
+    }, []);
 
-    }, [])
-
-    const handleClick = (gifURL) => {
-        handleGifClick(gifURL);
-    }
-
-return (
-    <div className="gif-container">
-        <button 
-            className="gif-close-btn" 
-            onClick={() => handleClick('CLOSE')}
-        >
-            Close
-        </button>
-        
-        {
-            gifsList.map((gif, index) => (
-                <img onClick={() => handleClick(gif)} key={index} src={gif} alt="" />
-            ))
-        }     
-        
-    </div>
-);
-
-}
+    return (
+        <div className={`gifs-wrapper ${'active'}`}>
+            <div className="gif-header">
+                <button className="gif-close-btn" onClick={() => handleGifClick('CLOSE')}>
+                    ✕ Close
+                </button>
+            </div>
+            <div className="gif-container">
+                {gifsList.map((gif, index) => (
+                    <img
+                        key={index}
+                        src={gif}
+                        alt={`gif-${index}`}
+                        onClick={() => handleGifClick(gif)}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+};
 
 export default Gifs;

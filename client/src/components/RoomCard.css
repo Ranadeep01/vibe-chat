@@ -1,0 +1,61 @@
+/* RoomCard.css – Dark Theme */
+
+.room-card {
+  background-color: #1e1e1e;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  padding: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f0f0f0;
+}
+
+.room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.room-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.room-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.room-card-creator {
+  font-size: 14px;
+  color: #bbbbbb;
+}
+
+.room-card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-card-count {
+  font-size: 16px;
+  font-weight: 500;
+  color: #81c784; /* soft green */
+}
+
+.btn {
+  background-color: #2196f3;
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+  border: none;
+}
+
+.btn:hover {
+  background-color: #1976d2;
+}

@@ -19,7 +19,7 @@ const LandingPage = () => {
         userName: '',
         gender: '',
         age: '',
-        roomName: '',
+        // roomName: '',
     });
     const [bgImage, setBgImage] = useState('');
 
@@ -38,17 +38,17 @@ const LandingPage = () => {
         localStorage.setItem('userName', userForm.userName);
         localStorage.setItem('age', userForm.age);
         localStorage.setItem('gender', userForm.gender);
-        localStorage.setItem('roomName', userForm.roomName);
+        // localStorage.setItem('roomName', userForm.roomName);
         if(userForm.userName === '') {
             alert('Please Enter User Name');
             return;  
         } 
-        if(userForm.roomName === '') {
-            alert('Please Enter Room Name');
-            return;
-        }
+        // if(userForm.roomName === '') {
+        //     alert('Please Enter Room Name');
+        //     return;
+        // }
         localStorage.setItem('userForm', JSON.stringify(userForm));
-        navigate(`/chat`);
+        navigate(`/rooms`);
         setUserForm({userName: '', gender: '', age: ''});
     }
 
@@ -70,7 +70,7 @@ const LandingPage = () => {
             }}
         />
         <input type="text" name="age" placeholder="Enter Age" value={userForm.age} className="landing-input" onChange={(e) => handleUserForm(e)} />
-        <input type="text" name="roomName" placeholder="Enter Room Name" value={userForm.roomName} className="landing-input" onChange={(e) => handleUserForm(e)} />
+        {/* <input type="text" name="roomName" placeholder="Enter Room Name" value={userForm.roomName} className="landing-input" onChange={(e) => handleUserForm(e)} /> */}
         <div className="gender-buttons">
             <button onClick={() => setUserForm({ ...userForm, gender: 'MALE' })}>
                 <img src={maleSign} alt="Male" />
@@ -83,7 +83,7 @@ const LandingPage = () => {
             </button>
         </div>
         <button onClick={handleSubmit} className="submit-button">
-            Enter Room
+            Search Room
         </button>
         </div>
 
