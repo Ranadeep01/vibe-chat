@@ -10,23 +10,23 @@ const Rooms = () => {
             emoji: '🔥'
         },
         {
-            name: 'Hot Talks',
+            name: 'Telugu Heroines',
             emoji: '😈'
         },
         {
-            name: 'Spicy Chat',
+            name: 'Casual',
             emoji: '🌶️'
         },
         {
-            name: 'After Dark',
+            name: 'Gay',
             emoji: '🌙'
         },
         {
-            name: 'Flirty Vibes',
+            name: 'Lesbian',
             emoji: '💋'
         },
         {
-            name: 'Lounge X',
+            name: 'Insect',
             emoji: '🥵'
         },
         {

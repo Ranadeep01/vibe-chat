@@ -13,8 +13,8 @@ import ImageModel from "../components/imageModel";
 import Gifs from "../components/Gifs";
 
 const Chat = () => {
-    // const SERVER = 'http://localhost:5000';
-    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+    const SERVER = 'http://localhost:5000';
+    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
     const chatContainerRef = useRef();
@@ -142,7 +142,7 @@ const Chat = () => {
 
             {/* <div className="room-details"> */}
                 <h3 className="room-name">{room}</h3>
-                <p className="online-count">{currOnline} online</p>
+                <p style={{color: 'yellow'}} className="online-count">{currOnline} online</p>
             {/* </div> */}
             </div>
 
