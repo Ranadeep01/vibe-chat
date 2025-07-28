@@ -83,7 +83,7 @@ const Chat = () => {
         if (!room) return;
 
         const content = paramMsg || msg || image;
-        if (!content.trim()) return;
+        // if (!content.trim()) return;
 
         socketRef.current.emit('message', {
             userName,
