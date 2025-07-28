@@ -13,8 +13,8 @@ import ImageModel from "../components/imageModel";
 import Gifs from "../components/Gifs";
 
 const Chat = () => {
-    // const SERVER = 'http://localhost:5000';
-    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+    const SERVER = 'http://localhost:5000';
+    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
     const chatContainerRef = useRef();
@@ -34,23 +34,21 @@ const Chat = () => {
     // Initialize socket and join room
     useEffect(() => {
 
-        const url = location.pathname.split('/');
-
-        setRoom(url[3]);
-        setUserName(url[2]);
+        setRoom(localStorage.getItem('roomName'));
+        setUserName(localStorage.getItem('userName'));
         
         socketRef.current = io(SERVER);
 
-        socket.emit('join', storedRoom);
+        socketRef.current.emit('join', localStorage.getItem('roomName'));
 
         // Listen for incoming messages
-        socket.on('message', (data) => {
+        socketRef.current.on('message', (data) => {
             setChat(prev => [...prev, data]);
         });
 
         // Cleanup on unmount
         return () => {
-            socket.disconnect();
+            socketRef.current.disconnect();
         };
     }, []);
 
@@ -71,21 +69,27 @@ const Chat = () => {
         return () => clearInterval(interval);
     }, [])
 
-    const handleSend = (paramMsg = '') => {
-        if (!room) return;
+const handleSend = (paramMsg = '') => {
+    if (!room) return;
 
-        const content = paramMsg || msg || image;
-        // if (!content.trim()) return;
+    let content = paramMsg || msg || image;
 
-        socketRef.current.emit('message', {
-            userName,
-            message: content,
-            roomName: room,
-        });
+    // SAFEGUARD: Ensure we're not sending binary objects
+    if (typeof content !== 'string') {
+        console.warn('Message content is not a string:', content);
+        return;
+    }
 
-        setMsg('');
-        setImage('');
-    };
+    socketRef.current.emit('message', {
+        userName,
+        message: paramMsg || msg || image,
+        roomName: room,
+    });
+
+    setMsg('');
+    setImage('');
+};
+
 
     const handleFileUpload = (e) => {
         const file = e.target.files[0];
@@ -181,7 +185,7 @@ const Chat = () => {
                 />
 
                 <span>
-                    <button onClick={handleSend}>
+                    <button onClick={() => handleSend()}>
                         <img src={sendLogo} alt="Send" />
                     </button>
                 </span>
