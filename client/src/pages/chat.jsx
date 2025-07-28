@@ -39,8 +39,7 @@ const Chat = () => {
         setRoom(url[3]);
         setUserName(url[2]);
         
-        socketRef.current = io('http://localhost:5000');
-        socketRef.current = io('https://vibe-chat-1wmu.onrender.com');
+        socketRef.current = io(SERVER);
 
         socket.emit('join', storedRoom);
 
