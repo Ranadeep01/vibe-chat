@@ -1,15 +1,25 @@
-import React, { use, useEffect, useRef, useState } from "react";
-import "./chat.css";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import io from 'socket.io-client';
 import axios from "axios";
+
+import "./chat.css";
 import uploadImg from '../assests/image-upload-icon.svg';
 import sendLogo from '../assests/send.svg';
+import gifIcon from '../assests/gif-icon.png';
+import backIcon from '../assests/back-arrow.svg';
+
 import ImageModel from "../components/imageModel";
-import { useLocation } from "react-router-dom";
+import Gifs from "../components/Gifs";
 
 const Chat = () => {
-    
+    const SERVER = 'http://localhost:5000';
+    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+
     const socketRef = useRef();
+    const chatContainerRef = useRef();
+
+    const navigate = useNavigate();
     const location = useLocation();
 
     const [msg, setMsg] = useState('');
@@ -17,8 +27,11 @@ const Chat = () => {
     const [chat, setChat] = useState([]);
     const [image, setImage] = useState('');
     const [userName, setUserName] = useState('');
-    const [isimageDialogOpen, setIsimageDialogOpen] = useState(false);
+    const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+    const [isGifsSectionActive, setIsGifsSectionActive] = useState(false);
+    const [currOnline, setCurrOnline] = useState(4);
 
+    // Initialize socket and join room
     useEffect(() => {
 
         const url = location.pathname.split('/');
@@ -29,133 +42,163 @@ const Chat = () => {
         socketRef.current = io('http://localhost:5000');
         socketRef.current = io('https://vibe-chat-1wmu.onrender.com');
 
-        socketRef.current.on('message', (data) => {
-            console.log('Received:', data);
+        socket.emit('join', storedRoom);
+
+        // Listen for incoming messages
+        socket.on('message', (data) => {
             setChat(prev => [...prev, data]);
         });
 
-        return () => socketRef.current.disconnect();
+        // Cleanup on unmount
+        return () => {
+            socket.disconnect();
+        };
     }, []);
 
-    const handleSend = () => {
-        if(room === '') return;
-        socketRef.current.emit('message', {
-            userName: userName,
-            message: msg,
-            roomName: room
-        });
-        setMsg('');
-    }
+    // Scroll to bottom when chat updates
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
+    }, [chat]);
 
-    const handleJoin = () => {
-        if(room === '') return;
-        console.log('joined', room);
-        socketRef.current.emit('join', room);
-        console.log('join request sent');
-        
-    }
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrOnline(Math.floor(Math.random() * 100));
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [])
+
+    const handleSend = (paramMsg = '') => {
+        if (!room) return;
+
+        const content = paramMsg || msg || image;
+        if (!content.trim()) return;
+
+        socketRef.current.emit('message', {
+            userName,
+            message: content,
+            roomName: room,
+        });
+
+        setMsg('');
+        setImage('');
+    };
 
     const handleFileUpload = (e) => {
-        setIsimageDialogOpen(true);
         const file = e.target.files[0];
+        if (!file) return;
+
+        setIsImageDialogOpen(true);
+
         const data = new FormData();
         data.append('file', file);
         data.append('upload_preset', 'ranadeep_demo');
-        data.append('cloud_name', 'dhk5v8qpf')
-        axios.post('https://api.cloudinary.com/v1_1/dhk5v8qpf/image/upload', data).then((res) => {
-            setImage(res?.data?.secure_url);
-            console.log(res);
-        })
-    }
+        data.append('cloud_name', 'dhk5v8qpf');
+
+        axios.post('https://api.cloudinary.com/v1_1/dhk5v8qpf/image/upload', data)
+            .then(res => {
+                setImage(res?.data?.secure_url || '');
+            })
+            .catch(err => {
+                console.error("Image upload failed", err);
+                setIsImageDialogOpen(false);
+            });
+    };
 
     const handleImageActions = (action) => {
-        switch (action) {
-            case 'SEND':
-                handleSend();
-                break;
-            
-            case 'CANCEL':
-                setImage('')
-                break;
-        
-            default:
-                break;
-        }        
-    }
+        if (action === 'SEND') handleSend();
+        if (action === 'CANCEL') setImage('');
+    };
+
+    const handleGifClick = (gif) => {
+        setIsGifsSectionActive(false);
+        if (gif !== 'CLOSE') {
+            handleSend(gif);
+        }
+    };
 
     return (
         <div className="container">
+            {/* Room Display */}
             <div className="room-input-container">
-                <input
-                    type="text"
-                    className="room-input"
-                    value={room}
-                    onChange={(e) => setRoom(e.target.value)}
-                    onKeyDown={
-                        (e) => {
-                            if(e.key === 'Enter') {
-                                handleJoin();
-                            }
+            <img
+                src={backIcon}
+                alt="Back"
+                width="24px"
+                onClick={() => navigate('/rooms')}
+                className="back-icon"
+            />
+
+            {/* <div className="room-details"> */}
+                <h3 className="room-name">{room}</h3>
+                <p style={{color: 'yellow'}} className="online-count">{currOnline} online</p>
+            {/* </div> */}
+            </div>
+
+            {/* Chat Messages */}
+            <div className="chat-container" ref={chatContainerRef}>
+                {chat.map((item, idx) => (
+                    <div className="chat" key={idx}>
+                        <p className="message-user">{item.userName}</p>
+                        {
+                            item.message.includes('dhk5v8qpf') || item.message.includes('russmus')
+                                ? <img src={item.message} alt="uploaded" className="message-img message-content" />
+                                : <p className="message-content">{item.message}</p>
                         }
-                    }
-                />
-                <button onClick={handleJoin}>Join</button>
+                    </div>
+                ))}
             </div>
-            <div className="chat-container">
-                {
-                    chat.map((item, idx) => (
-                        <div className="chat" key={idx}>
-                            <p className="message-user">{item.userName}</p>
-                            {
-                                item.message.includes('dhk5v8qpf') ? (
-                                    <img src={item.message} alt="" className="message-img message-content" />
-                                ) :
-                                (
-                                    <p className="message-content">{item.message}</p>
-                                )
-                            }
-                        </div>
-                    ))
-                }
-            </div>
+
+            {/* Input Section */}
             <div className="input-container">
-                <input
-                    type="file" 
-                    id="file"
-                    onChange={(e) => handleFileUpload(e)}
-                />
-                <label 
-                    className="file-input"
-                    htmlFor="file">
-                    <img src={uploadImg} alt="" />
-                </label>
                 <input
                     className="chat-input"
                     type="text"
                     placeholder="Type your message here"
                     value={msg}
                     onChange={(e) => setMsg(e.target.value)}
-                    onKeyDown={
-                        (e) => {
-                            if(e.key === 'Enter') {
-                                handleSend();
-                            }
-                        }
-                    }
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 />
+
+                <input
+                    type="file"
+                    id="file"
+                    onChange={handleFileUpload}
+                    style={{ display: 'none' }}
+                />
+                <label htmlFor="file" className="file-input">
+                    <img src={uploadImg} alt="Upload" />
+                </label>
+
+                <img
+                    src={gifIcon}
+                    alt="GIF"
+                    onClick={() => setIsGifsSectionActive(true)}
+                    style={{ width: '30px', cursor: 'pointer' }}
+                />
+
                 <span>
                     <button onClick={handleSend}>
-                        <img src={sendLogo} alt="" />
+                        <img src={sendLogo} alt="Send" />
                     </button>
                 </span>
             </div>
 
-            {
-                image && (
-                    <ImageModel image={image} handleImageActions={handleImageActions} />
-                )
-            }
+            {/* Image Preview Dialog */}
+            {image && (
+                <ImageModel image={image} handleImageActions={handleImageActions} />
+            )}
 
+            {/* GIF Picker */}
+            {isGifsSectionActive && (
+                <div className="gifs-section">
+                    <Gifs handleGifClick={handleGifClick} />
+                </div>
+            )}
         </div>
     );
 };

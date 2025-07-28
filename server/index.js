@@ -4,7 +4,8 @@ const http = require('http');
 const mongoose = require('mongoose');
 const socketIo = require('socket.io');
 
-const MONGODB_CONNECTION_STRING = 'mongodb+srv://ranadeepbashetty:Ranadeep%402002@random-chat-cluster.3n6oiie.mongodb.net/?retryWrites=true&w=majority&appName=random-chat-cluster';
+const MONGODB_CONNECTION_STRING = 'mongodb+srv://appchatrooms:tTFlfUc6qOIGEuh1@chat-rooms.zgirfad.mongodb.net/?retryWrites=true&w=majority&appName=chat-rooms';
+// const MONGODB_CONNECTION_STRING = 'mongodb://localhost:27017/chat_rooms';
     
 const app = express();
 
@@ -21,7 +22,7 @@ let msg = 'hello ranadeep';
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: 'http://localhost:3000',
+        origin: '*',
         methods: ['GET', 'POST']
     }
 });
@@ -36,32 +37,45 @@ app.get('/messages/:room', async (req, res) => {
     res.send(messages);
 });
 
-mongoose.connect(MONGODB_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true })
+app.get('/all-rooms', async (req, res) => {
+  
+})
+
+mongoose.connect(MONGODB_CONNECTION_STRING, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000
+})
 .then(() =>  
     console.log('Connected to MongoDB')
 )
 .catch(err => console.error(err));
 
-io.on('connection', (socket) => {
+const getMessageModel = (roomName) => {
+  return mongoose.models[roomName] || mongoose.model(roomName, messageSchema, roomName);
+};
 
-    socket.on('join', (data) => {
-        socket.join(data);
-        console.log('joined room: ', data);
-        
-    })
-    
-    socket.on('message', (data) => {
-        const messageModel = mongoose.model('Message', messageSchema, data.roomName);
-        console.log(data);
-        const msg = new messageModel(data); 
-        const res = msg.save();
-        io.to(data.roomName).emit('message', data);
+io.on('connection', (socket) => {
+    console.log('New client connected:', socket.id);
+
+    socket.on('join', (room) => {
+        socket.join(room);
+        socket.broadcast.to(room).emit('member_added', 'New user joined the room')
+        console.log(`Socket ${socket.id} joined room: ${room}`);
+        io.to(room).emit('joined', room)
     });
 
-    
-    // io.to(data.roomName).emit('message', data);
-})  
+    socket.on('message', (data) => {
+        console.log('Message received:', data);
+        io.to(data.roomName).emit('message', data); // Broadcast to room
+    });
+});
 
-server.listen(5000, () => {
-  console.log('Server is running on port 5000');
+
+
+const PORT = process.env.PORT || 5000;
+
+server.listen(PORT, () => {
+  console.log('Server is running on port ', PORT);
 });

@@ -1,0 +1,6 @@
+.rooms-list {
+  margin: 2em;
+  gap: 1em;
+  display: flex;
+  flex-direction: column;
+}
