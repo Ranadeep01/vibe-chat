@@ -33,21 +33,13 @@ const Chat = () => {
 
     // Initialize socket and join room
     useEffect(() => {
-        console.log('useeffect');
+
+        const url = location.pathname.split('/');
+
+        setRoom(url[3]);
+        setUserName(url[2]);
         
-        const storedUserName = localStorage.getItem('userName');
-        const storedRoom = localStorage.getItem('roomName');
-
-        if (!storedUserName || !storedRoom) {
-            navigate('/');
-            return;
-        }
-
-        setUserName(storedUserName);
-        setRoom(storedRoom);
-
-        const socket = io(SERVER);
-        socketRef.current = socket;
+        socketRef.current = io(SERVER);
 
         socket.emit('join', storedRoom);
 
