@@ -13,8 +13,8 @@ import ImageModel from "../components/imageModel";
 import Gifs from "../components/Gifs";
 
 const Chat = () => {
-    const SERVER = 'http://localhost:5000';
-    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+    // const SERVER = 'http://localhost:5000';
+    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
     const chatContainerRef = useRef();
