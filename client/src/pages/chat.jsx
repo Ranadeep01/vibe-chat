@@ -13,11 +13,12 @@ import ImageModel from "../components/imageModel";
 import Gifs from "../components/Gifs";
 
 const Chat = () => {
-    // const SERVER = 'http://localhost:5000';
-    const SERVER = 'https://vibe-chat-1wmu.onrender.com';
+    const SERVER = 'http://localhost:5000';
+    // const SERVER = 'https://vibe-chat-1wmu.onrender.com';
 
     const socketRef = useRef();
     const chatContainerRef = useRef();
+    const [serverMSG, setServerMSG] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -33,13 +34,16 @@ const Chat = () => {
 
     // Initialize socket and join room
     useEffect(() => {
-
-        setRoom(localStorage.getItem('roomName'));
-        setUserName(localStorage.getItem('userName'));
+        const roomName = localStorage.getItem('roomName');
+        const userName = localStorage.getItem('userName');
+        setRoom(roomName);
+        setUserName(userName);
         
         socketRef.current = io(SERVER);
-
-        socketRef.current.emit('join', localStorage.getItem('roomName'));
+        console.log('[CLIENT] - connection req sent');
+        
+        socketRef.current.emit('join', {roomName: roomName, userName: userName});
+        console.log('[CLIENT] - join req sent with room name ', roomName);
 
         // Listen for incoming messages
         socketRef.current.on('message', (data) => {
@@ -49,6 +53,22 @@ const Chat = () => {
         // Cleanup on unmount
         return () => {
             socketRef.current.disconnect();
+        };
+    }, []);
+
+    useEffect(() => {
+        socketRef.current.on('connected', (data) => {
+            console.log('on connnection ', data);
+        })
+    }, []);
+
+    useEffect(() => {
+        socketRef.current.on('joined', (data) => {
+            console.log('[CLIENT] - joined room', data);
+            setServerMSG(data);
+        })
+        return () => {
+            socketRef.current.off("joined");
         };
     }, []);
 
@@ -100,9 +120,9 @@ const handleSend = (paramMsg = '') => {
         const data = new FormData();
         data.append('file', file);
         data.append('upload_preset', 'ranadeep_demo');
-        data.append('cloud_name', 'dhk5v8qpf');
+        data.append('cloud_name', 'dyiq1oyka');
 
-        axios.post('https://api.cloudinary.com/v1_1/dhk5v8qpf/image/upload', data)
+        axios.post('https://api.cloudinary.com/v1_1/dyiq1oyka/image/upload', data)
             .then(res => {
                 setImage(res?.data?.secure_url || '');
             })
@@ -126,6 +146,17 @@ const handleSend = (paramMsg = '') => {
 
     return (
         <div className="container">
+            {serverMSG && localStorage.getItem('roomName') === serverMSG.roomName && (
+                <div className="server-msg" style={{animation: 'slideDown 0.5s forwards'}}>
+                    <span> {serverMSG.userName} joined room </span>
+                    <span style={{opacity: 0}}>
+                        {setTimeout(() => {
+                            setServerMSG(null);
+                        }, 2000)}
+                    </span>
+                </div>
+            )}
+
             {/* Room Display */}
             <div className="room-input-container">
             <img

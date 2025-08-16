@@ -4,8 +4,8 @@ const http = require('http');
 const mongoose = require('mongoose');
 const socketIo = require('socket.io');
 
-const MONGODB_CONNECTION_STRING = 'mongodb+srv://appchatrooms:tTFlfUc6qOIGEuh1@chat-rooms.zgirfad.mongodb.net/?retryWrites=true&w=majority&appName=chat-rooms';
-// const MONGODB_CONNECTION_STRING = 'mongodb://localhost:27017/chat_rooms';
+// const MONGODB_CONNECTION_STRING = 'mongodb+srv://appchatrooms:tTFlfUc6qOIGEuh1@chat-rooms.zgirfad.mongodb.net/?retryWrites=true&w=majority&appName=chat-rooms';
+const MONGODB_CONNECTION_STRING = 'mongodb://localhost:27017/chat_rooms';
     
 const app = express();
 
@@ -57,22 +57,22 @@ const getMessageModel = (roomName) => {
 };
 
 io.on('connection', (socket) => {
-    console.log('New client connected:', socket.id);
+    console.log('New client connected:', socket);
 
-    socket.on('join', (room) => {
-        socket.join(room);
-        socket.broadcast.to(room).emit('member_added', 'New user joined the room')
-        console.log(`Socket ${socket.id} joined room: ${room}`);
-        io.to(room).emit('joined', room)
+    socket.on('join', (data) => {
+      const room = data.roomName;
+      console.log(room, data.roomName);
+      
+      socket.join(room);
+      console.log(`Socket ${socket.id} joined room: ${room}`);
+      io.to(room).emit('joined', data)
     });
 
     socket.on('message', (data) => {
         console.log('Message received:', data);
-        io.to(data.roomName).emit('message', data); // Broadcast to room
+        io.to(data.roomName).emit('message', data);
     });
 });
-
-
 
 const PORT = process.env.PORT || 5000;
 
